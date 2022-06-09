@@ -2,8 +2,10 @@
 
 const express = require("express");
 const mongoose = require("mongoose");
+const _ = require("lodash");
 
 const app = express();
+app.locals._ = _;
 
 app.set('view engine', 'ejs');
 
@@ -83,13 +85,22 @@ app.get("/:list", (req, res) => {
 app.post("/", (req, res) => {
 
   const itemName = req.body.newItem;
+  const listName = req.body.list;
+
   const item = new Item({
     name: itemName
   });
 
-  item.save();
-  res.redirect("/");
-
+  if (listName === "Today") {
+    item.save();
+    res.redirect("/");
+  } else {
+    List.findOne({name: listName}, (err, result) => {
+      result.items.push(item);
+      result.save();
+      res.redirect("/" + listName);
+    });
+  }
 });
 
 app.post("/delete", (req, res) => {
