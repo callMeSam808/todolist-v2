@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const _ = require("lodash");
 
 const app = express();
-app.locals._ = _;
 
 app.set('view engine', 'ejs');
 
@@ -61,7 +60,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/:list", (req, res) => {
-  const customListName = req.params.list;
+  const customListName = _.capitalize(req.params.list);
 
   List.findOne({name: customListName}, (err, result) => {
     if (!err) {
